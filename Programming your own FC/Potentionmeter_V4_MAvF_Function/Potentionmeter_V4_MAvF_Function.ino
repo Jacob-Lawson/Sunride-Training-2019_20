@@ -11,7 +11,7 @@
 #define GREEN 5
 #define RED 6
 
-#define WINDOW_SIZE 5
+#define WINDOW_SIZE 15
 
 Servo myservo;  // create servo object to control a servo
 // twelve servo objects can be created on most boards
@@ -19,6 +19,7 @@ Servo myservo;  // create servo object to control a servo
 int pos = 0;    // variable to store the servo position
 int POTPin = A0;  // potentionmeter input at pin A0;
 int POTreadvalue; // read value variable
+int readvalue;    // function out
 int DataFreq1;     // user defined rate of data collection
 int DataFreq2;     // rate of servo control
 float Voltage;      // true voltage value across potentionmeter
@@ -84,19 +85,8 @@ void loop() {
 
   delay(DataFreq1);
 
-  POTreadvalue = analogRead(POTPin);
-  SUM = SUM - READINGS[INDEX];       // Remove the oldest entry from the sum
-  READINGS[INDEX] = POTreadvalue;           // Add the newest reading to the window
-  SUM = SUM + POTreadvalue;                 // Add the newest reading to the sum
-  INDEX = (INDEX+1) % WINDOW_SIZE;   // Increment the index, and wrap to 0 if it exceeds the window size
-  AVERAGED = SUM / WINDOW_SIZE;      // Divide the sum of the window by the window size for the result
-  Voltage = AVERAGED/204.6;
+  MAvF(POTPin);
   
-  Serial.print(POTreadvalue);
-  Serial.print(",");
-  Serial.println(AVERAGED);
-  
-  delay(DataFreq1);
 
   if ( Voltage > 4.00){
 
@@ -104,12 +94,12 @@ void loop() {
       analogWrite(BLUE, blueValue);
       analogWrite(GREEN, 0);
       analogWrite(RED, 0);
-      delay(DataFreq1);
 
+      ReadPin(POTPin);
+      POTreadvalue = readvalue;
       myservo.write(POTreadvalue/5.7);  // tell servo to go to position in variable 'pos'
       delay(15);                       // waits 15ms for the servo to reach the position
       
-      Serial.println(Voltage);
   }
   if ( Voltage < 1.00){
 
@@ -117,12 +107,12 @@ void loop() {
       analogWrite(GREEN, greenValue);
       analogWrite(RED, 0);
       analogWrite(BLUE, 0);
-      delay(DataFreq1);
 
+      ReadPin(POTPin);
+      POTreadvalue = readvalue;
       myservo.write(POTreadvalue/5.7);  // tell servo to go to position in variable 'pos'
       delay(15);                       // waits 15ms for the servo to reach the position
-      
-      Serial.println(Voltage);
+
   }
   if ( Voltage > 1.00 && Voltage < 4.00){
 
@@ -130,12 +120,45 @@ void loop() {
       analogWrite(RED, redValue);
       analogWrite(GREEN, 0);
       analogWrite(BLUE, 0);
-      delay(DataFreq1);
 
+      ReadPin(POTPin);
+      POTreadvalue = readvalue;
       myservo.write(POTreadvalue/5.7);  // tell servo to go to position in variable 'pos'
       delay(15);                       // waits 15ms for the servo to reach the position
 
-      Serial.println(Voltage);
   }
+  
+}
+//---------------------------------------------------------------------------------------------------------//
+int MAvF(int PinIn) {
+  int readvalue; // read value variable
+  
+    readvalue = analogRead(PinIn);
+    SUM = SUM - READINGS[INDEX];       // Remove the oldest entry from the sum
+    READINGS[INDEX] = readvalue;           // Add the newest reading to the window
+    SUM = SUM + readvalue;                 // Add the newest reading to the sum
+    INDEX = (INDEX+1) % WINDOW_SIZE;   // Increment the index, and wrap to 0 if it exceeds the window size
+    AVERAGED = SUM / WINDOW_SIZE;      // Divide the sum of the window by the window size for the result
+    Voltage = AVERAGED/204.6;
+  
+  Serial.print(readvalue);
+  Serial.print(",");
+  Serial.println(AVERAGED);
+
+  return Voltage;
+  
+}
+
+//---------------------------------------------------------------------------------------------------------//
+int ReadPin(int PinIn) {
+  int readvalue; // read value variable
+  
+    readvalue = analogRead(PinIn);
+    
+  Serial.print(readvalue);
+  Serial.print(",");
+  Serial.println(AVERAGED);
+
+  return readvalue;
   
 }

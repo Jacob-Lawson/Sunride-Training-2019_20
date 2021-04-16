@@ -11,7 +11,7 @@
 #define GREEN 5
 #define RED 6
 
-#define WINDOW_SIZE 5
+#define WINDOW_SIZE 15
 
 Servo myservo;  // create servo object to control a servo
 // twelve servo objects can be created on most boards
@@ -96,7 +96,6 @@ void loop() {
   Serial.print(",");
   Serial.println(AVERAGED);
   
-  delay(DataFreq1);
 
   if ( Voltage > 4.00){
 
@@ -104,12 +103,10 @@ void loop() {
       analogWrite(BLUE, blueValue);
       analogWrite(GREEN, 0);
       analogWrite(RED, 0);
-      delay(DataFreq1);
 
       myservo.write(POTreadvalue/5.7);  // tell servo to go to position in variable 'pos'
       delay(15);                       // waits 15ms for the servo to reach the position
       
-      Serial.println(Voltage);
   }
   if ( Voltage < 1.00){
 
@@ -117,12 +114,10 @@ void loop() {
       analogWrite(GREEN, greenValue);
       analogWrite(RED, 0);
       analogWrite(BLUE, 0);
-      delay(DataFreq1);
 
       myservo.write(POTreadvalue/5.7);  // tell servo to go to position in variable 'pos'
       delay(15);                       // waits 15ms for the servo to reach the position
-      
-      Serial.println(Voltage);
+
   }
   if ( Voltage > 1.00 && Voltage < 4.00){
 
@@ -130,12 +125,10 @@ void loop() {
       analogWrite(RED, redValue);
       analogWrite(GREEN, 0);
       analogWrite(BLUE, 0);
-      delay(DataFreq1);
 
       myservo.write(POTreadvalue/5.7);  // tell servo to go to position in variable 'pos'
       delay(15);                       // waits 15ms for the servo to reach the position
 
-      Serial.println(Voltage);
   }
   
 }
